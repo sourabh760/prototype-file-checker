@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DiggyPOD checkout with File Check: prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#1B2138; --muted:#4B5563; --soft:#6B7280; --line:#E3E6EA; --field:#BFC4CC;
+  --navy:#1E3A5F; --navy-ink:#FFFFFF; --navy-off:#8A97A8;
+  --panel:#E9EDEB; --panel-line:#C5CCC9; --label:#5F6670; --card:#FFFFFF;
+  --banner:#E8F1FB; --banner-ink:#1A6FD8; --pill:#FBF4E6;
+  --ok:#E7F5EC; --ok-ink:#14532D; --info:#E8F1FB; --info-ink:#123A6B;
+  --warn:#FFF8EC; --warn-line:#F0C98A; --warn-head:#6B3A00; --warn-ink:#5B4A33;
+  --confirm:#F3F6FA; --proto:#1B2138; --proto-ink:#F5F1E6;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161F; --ink:#E9ECF2; --muted:#B4BBC6; --soft:#98A1AE; --line:#2A3240; --field:#465062;
+    --navy:#7FA8DE; --navy-ink:#0E1522; --navy-off:#4A5568;
+    --panel:#1C232D; --panel-line:#333D4B; --label:#A7B0BC; --card:#18202B;
+    --banner:#16263B; --banner-ink:#8DB8F2; --pill:#2A2519;
+    --ok:#12301F; --ok-ink:#9BE3B7; --info:#16263B; --info-ink:#B9D4F5;
+    --warn:#2B2214; --warn-line:#6B5226; --warn-head:#F2C98A; --warn-ink:#E3D3B8;
+    --confirm:#1F2834; --proto:#E9ECF2; --proto-ink:#11161F;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161F; --ink:#E9ECF2; --muted:#B4BBC6; --soft:#98A1AE; --line:#2A3240; --field:#465062;
+  --navy:#7FA8DE; --navy-ink:#0E1522; --navy-off:#4A5568;
+  --panel:#1C232D; --panel-line:#333D4B; --label:#A7B0BC; --card:#18202B;
+  --banner:#16263B; --banner-ink:#8DB8F2; --pill:#2A2519;
+  --ok:#12301F; --ok-ink:#9BE3B7; --info:#16263B; --info-ink:#B9D4F5;
+  --warn:#2B2214; --warn-line:#6B5226; --warn-head:#F2C98A; --warn-ink:#E3D3B8;
+  --confirm:#1F2834; --proto:#E9ECF2; --proto-ink:#11161F;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Lato",system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--navy)}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #6CA0DC;outline-offset:2px}
+img{max-width:100%}
+[hidden]{display:none !important}
+h1,h2{line-height:1.2}
+.display{font-family:"Poppins",system-ui,sans-serif}
+.wrap{max-width:1380px;margin:0 auto;padding:0 32px}
+
+.proto{background:var(--proto);color:var(--proto-ink);font-size:14px;padding:10px 20px;text-align:center}
+
+header.site{display:flex;flex-wrap:wrap;align-items:center;gap:20px 28px;padding-top:20px;padding-bottom:20px}
+.logo{font-family:"Poppins",system-ui,sans-serif;font-weight:700;font-size:32px;letter-spacing:.5px;color:var(--ink);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:12px 26px;margin-left:auto;font-size:17px}
+nav.main a{color:var(--ink);text-decoration:none}
+.get-pricing{background:var(--navy);color:var(--navy-ink);text-decoration:none;padding:12px 26px;border-radius:8px;font-size:17px}
+.phone{background:var(--pill);border-radius:12px;padding:10px 18px;font-size:17px}
+
+.banner{background:var(--banner);color:var(--banner-ink);border-radius:6px;padding:20px 32px;font-size:18px}
+
+.layout{max-width:1240px;margin:0 auto;padding:44px 32px 80px;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start}
+.col{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:36px}
+.title{font-size:40px;margin:0}
+section{display:flex;flex-direction:column;gap:16px}
+section h2{font-size:26px;margin:0;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.sub{margin:6px 0 0;color:var(--muted)}
+label.field{display:flex;flex-direction:column;gap:8px;font-weight:700}
+.input{font:inherit;font-weight:400;color:var(--ink);background:var(--bg);border:1px solid var(--field);border-radius:999px;padding:14px 22px;width:100%}
+.filebox{display:flex;flex-wrap:wrap;align-items:center;gap:14px;border:1px solid var(--field);border-radius:999px;padding:8px 8px 8px 22px}
+.filebox .name{flex:1 1 200px;min-width:0;overflow-wrap:anywhere}
+.filebox .name.empty{color:var(--soft)}
+
+.btn{border:0;border-radius:999px;font-weight:700;min-height:44px;padding:10px 22px;font-size:15px}
+.btn-solid{background:var(--navy);color:var(--navy-ink)}
+.btn-outline{background:var(--card);color:var(--navy);border:2px solid var(--navy);padding:8px 20px}
+.btn-link{background:transparent;color:var(--navy);text-decoration:underline;padding:10px 12px}
+.btn-order{background:var(--navy);color:var(--navy-ink);padding:16px 40px;font-size:18px;min-height:52px;align-self:flex-start}
+.btn-order:disabled{background:var(--navy-off);cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+
+.picker{border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(27,33,56,.12);background:var(--card)}
+.picker .hint{font-size:13px;color:var(--muted);padding:6px 12px}
+.picker button{background:transparent;border:0;border-radius:10px;padding:12px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-size:15px;color:var(--ink);text-align:left;min-height:44px}
+.picker button:hover{background:var(--confirm)}
+.picker button span:last-child{color:var(--muted)}
+
+.checking{display:flex;align-items:center;gap:12px;color:var(--muted);padding:6px 4px}
+.spin{width:18px;height:18px;border-radius:50%;border:3px solid var(--field);border-top-color:var(--navy);animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}}
+
+.note{border-radius:16px;padding:16px 20px;display:flex;gap:12px;align-items:flex-start}
+.note svg{flex:none;margin-top:2px}
+.note .head{font-weight:700}
+.note .body{font-size:15px}
+.note.ok{background:var(--ok);color:var(--ok-ink)}
+.note.info{background:var(--info);color:var(--info-ink)}
+
+.fix{border:1px solid var(--warn-line);background:var(--warn);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.fix .lead{font-weight:900;font-size:18px;color:var(--warn-head)}
+.fix .lead-sub{color:var(--warn-ink)}
+.issues{background:var(--card);border-radius:14px;padding:6px 18px 14px}
+.issue{display:flex;flex-direction:column;gap:4px;padding:12px 0}
+.issue + .issue{border-top:1px solid var(--line)}
+.issue .t{font-weight:700}
+.issue .tip{font-size:15px;color:var(--muted)}
+.confirm{background:var(--confirm);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.panel{background:var(--card);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.anyway{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:16px;border-top:1px solid var(--warn-line)}
+.anyway .btn{padding:12px 28px;font-size:16px;min-height:46px}
+.anyway p{margin:0;font-size:15px;color:var(--warn-ink);text-align:center}
+
+.check-row{display:flex;align-items:center;gap:12px;min-height:44px}
+.check-row input{width:20px;height:20px}
+.order-hint{font-size:15px;color:var(--muted)}
+
+aside.summary{flex:1 1 380px;min-width:0;background:var(--panel);border-radius:28px;padding:40px 36px;display:flex;flex-direction:column;gap:22px}
+aside.summary h2{font-size:28px;margin:0;padding-bottom:18px;border-bottom:1px solid var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 20px}
+.k{color:var(--label);font-size:15px;text-transform:uppercase}
+.v{font-weight:700}
+.updated{background:var(--card);border-radius:12px;padding:12px 14px;font-size:15px}
+.totals{border-top:1px solid var(--panel-line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.totals div{display:flex;justify-content:space-between;gap:12px}
+.totals .grand{font-size:20px;padding-top:8px}
+.totals .grand span:last-child{font-weight:900}
+
+.done{max-width:760px;margin:0 auto;padding:64px 32px 96px;display:flex;flex-direction:column;gap:26px}
+.done .tick{width:64px;height:64px;border-radius:50%;background:var(--ok);color:var(--ok-ink);display:flex;align-items:center;justify-content:center}
+.done p.msg{font-size:20px;margin:0}
+.next{background:var(--panel);border-radius:24px;padding:28px 32px;display:flex;flex-direction:column;gap:12px}
+.next h2{font-size:22px;margin:0}
+.next ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+
+@media (max-width:640px){
+  .wrap,.layout,.done{padding-left:18px;padding-right:18px}
+  .title{font-size:32px}
+  nav.main{margin-left:0;width:100%}
+  aside.summary{padding:28px 22px}
+  .btn-order{align-self:stretch}
+}
+</style>
+</head>
+<body>
+
+<div class="proto">Prototype: no files are uploaded. Choose a demo file under "Upload your files" to see each outcome.</div>
+
+<header class="site wrap">
+  <a class="logo" href="#">DiGGYPOD</a>
+  <nav class="main" aria-label="Main">
+    <a href="#">Home</a><a href="#">Choose your Path</a><a href="#">Resources</a><a href="#">Company</a>
+  </nav>
+  <a class="get-pricing" href="#">Get Pricing</a>
+  <span class="phone">866-598-7171 | Blog</span>
+</header>
+
+<div id="checkout">
+  <div class="wrap"><div class="banner">Book added to your cart</div></div>
+
+  <main class="layout">
+    <div class="col">
+      <h1 class="title display">Checkout</h1>
+
+      <section aria-labelledby="ship">
+        <h2 id="ship">Where would you like your book shipped?</h2>
+        <label class="field">Full name<input class="input" type="text" value="Jane Smith" autocomplete="name"></label>
+        <label class="field">Phone number<input class="input" type="tel" value="(555) 010-2468" autocomplete="tel"></label>
+        <label class="field">Street address<input class="input" type="text" value="12 Maple Street" autocomplete="street-address"></label>
+      </section>
+
+      <section aria-labelledby="files">
+        <div style="padding-bottom:14px;border-bottom:1px solid var(--line)">
+          <h2 id="files" style="border:0;padding:0">Upload your files</h2>
+          <p class="sub">PDF files up to 500 MB. Larger files can be shared with a Google Drive link.</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-weight:700">Text PDF</div>
+          <div class="filebox">
+            <span class="name empty" id="textName">No file chosen</span>
+            <button type="button" class="btn btn-solid" data-action="togglePicker" aria-expanded="false" aria-controls="picker">Choose file</button>
+          </div>
+          <div class="picker" id="picker" hidden>
+            <div class="hint">Demo files: pick one to see how the check responds</div>
+            <button type="button" data-action="pick" data-arg="ready"><span>Grandmas-Garden-final.pdf</span><span>print-ready</span></button>
+            <button type="button" data-action="pick" data-arg="size"><span>Grandmas-Garden-Canva-export.pdf</span><span>3 fixable problems</span></button>
+            <button type="button" data-action="pick" data-arg="pages"><span>Grandmas-Garden-v2.pdf</span><span>2 extra pages</span></button>
+            <button type="button" data-action="pick" data-arg="color"><span>Grandmas-Garden-with-photos.pdf</span><span>has color pages</span></button>
+          </div>
+          <div id="check" aria-live="polite"></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-weight:700">Cover PDF</div>
+          <div class="filebox">
+            <span class="name empty" id="coverName">No file chosen</span>
+            <button type="button" class="btn btn-solid" data-action="pickCover">Choose file</button>
+          </div>
+        </div>
+
+        <label class="field">Google Drive link (optional)
+          <input class="input" id="drive" type="url" placeholder="Paste a share link if your file is too large to upload">
+        </label>
+      </section>
+
+      <section aria-labelledby="billing">
+        <h2 id="billing">Billing address</h2>
+        <label class="check-row"><input type="checkbox" checked> Same as shipping address</label>
+      </section>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button type="button" class="btn btn-order" id="placeOrder" data-action="placeOrder" disabled>Place order</button>
+        <div class="order-hint" id="orderHint">Upload your text file, or share a Google Drive link, to place your order.</div>
+      </div>
+    </div>
+
+    <aside class="summary" aria-label="Order summary">
+      <h2>Order Summary</h2>
+      <div class="grid">
+        <div><div class="k">Quantity</div><div class="v">24</div></div>
+        <div><div class="k">Book title</div><div class="v">Grandma's Garden</div></div>
+        <div><div class="k">Size</div><div class="v">5.5 x 8.5</div></div>
+        <div><div class="k">Total pages: <span id="pages">16</span></div><div class="v">(<span id="bw">16</span> B/W, <span id="color">0</span> Color)</div></div>
+        <div><div class="k">Paper stock</div><div class="v">50# Offset - White</div></div>
+        <div><div class="k">Binding type</div><div class="v">Perfect Bound</div></div>
+        <div><div class="k">Lamination type</div><div class="v">Gloss Lamination</div></div>
+        <div><div class="k">Production speed</div><div class="v">Normal (5-10 Business Days)</div></div>
+        <div><div class="k">Spine width</div><div class="v" id="spine">0.031"</div></div>
+      </div>
+      <div class="updated" id="updated" role="status" hidden>Updated to match your file.</div>
+      <div class="totals">
+        <div><span class="k">Per book price</span><span class="v" id="perBook">$5.54</span></div>
+        <div><span class="k">Additional services</span><span class="v" id="additional">$0.00</span></div>
+        <div class="grand"><span class="v">Total amount</span><span id="total">$132.96</span></div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<main class="done" id="done" hidden>
+  <div class="tick" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <h1 class="title display">Thank you, your order is placed</h1>
+  <p class="msg" id="doneMsg"></p>
+  <section class="next" aria-labelledby="next">
+    <h2 id="next">What happens next</h2>
+    <ol>
+      <li>We email you a digital proof of your book.</li>
+      <li>You approve it, or tell us what to change.</li>
+      <li>We print, bind and ship your books, with an email at each step.</li>
+    </ol>
+  </section>
+  <button type="button" class="btn btn-outline" style="align-self:flex-start;padding:12px 24px;font-size:16px" data-action="reset">Try another demo file</button>
+</main>
+
+<script>
+(function () {
+  var NAMES = {
+    ready: 'Grandmas-Garden-final.pdf', size: 'Grandmas-Garden-Canva-export.pdf',
+    pages: 'Grandmas-Garden-v2.pdf', color: 'Grandmas-Garden-with-photos.pdf'
+  };
+  var ISSUES = {
+    size: [
+      ['The page size doesn\u2019t match your book', 'Your pages are 5.83 \u00d7 8.27 in, but you ordered a 5.5 \u00d7 8.5 in book.', 'Tip: set the page size to 5.5 \u00d7 8.5 in when you export your PDF.'],
+      ['Some images run to the edge without bleed', 'On pages 4 and 5, images reach the edge of the page, so a sliver could be cut off when the book is trimmed.', 'Tip: extend those images 0.125 in past the edge on every side.'],
+      ['Some pages are a different size', 'Pages 12 and 13 are larger than the rest of your book.', 'Tip: check those pages were set to the same size as the others.']
+    ],
+    pages: [['The page count doesn\u2019t match your order', 'Your file has 18 pages, but your order is for 16.', 'Please check this is the right file. If it is, you can update your order.']],
+    color: [['Some pages have color', 'Pages 3 and 9 have color, but your order is black and white.', 'You can print them in black and white at no extra cost, or add them as color pages.']]
+  };
+  var OK_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>';
+  var TOOL_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>';
+
+  var S, timer;
+  function fresh() {
+    return { screen: 'checkout', scenario: null, checking: false, picker: false, cover: false, drive: '',
+      confirm: null, service: false, pagesUpdated: false, colorUpdated: false, bw: false };
+  }
+  function set(patch) { for (var k in patch) S[k] = patch[k]; render(); }
+  function $(id) { return document.getElementById(id); }
+
+  function resolved() { return S.scenario === 'ready' || S.bw || S.colorUpdated || S.pagesUpdated; }
+
+  function checkHTML() {
+    if (!S.scenario) return '';
+    if (S.checking) return '<div class="checking" role="status"><span class="spin" aria-hidden="true"></span><span>Checking your file\u2026 you can keep filling in your details.</span></div>';
+    if (S.service) return '<div class="note info" role="status">' + TOOL_ICON + '<div><div class="head">Formatting services added.</div><div class="body">Our prepress team will fix your file. You\u2019ll get a proof to approve before anything is printed.</div></div></div>';
+    if (resolved()) {
+      var t = 'Your file looks print-ready.', b = 'Page size, page count and bleed all match your order.';
+      if (S.bw) { t = 'All set.'; b = 'Pages 3 and 9 will print in black and white. Your price stays the same.'; }
+      if (S.pagesUpdated) { t = 'All set.'; b = 'Your order now has 18 pages, matching your file.'; }
+      if (S.colorUpdated) { t = 'All set.'; b = 'Pages 3 and 9 will print in color, matching your file.'; }
+      return '<div class="note ok" role="status">' + OK_ICON + '<div><div class="head">' + t + '</div><div class="body">' + b + '</div></div></div>';
+    }
+
+    var h = '<div class="fix"><div><div class="lead">We spotted something to fix before printing.</div><div class="lead-sub">Sorting it now avoids delays later.</div></div><div class="issues">';
+    ISSUES[S.scenario].forEach(function (i) {
+      h += '<div class="issue"><div class="t">' + i[0] + '</div><div>' + i[1] + '</div><div class="tip">' + i[2] + '</div></div>';
+    });
+    if (S.scenario === 'pages') {
+      h += S.confirm === 'pages'
+        ? '<div class="confirm"><div>Update your order to 18 pages? Your new price per book is <strong>[NEW PRICE]</strong>. Your cover\u2019s spine gets slightly wider too, and our team will adjust it for you.</div><div class="row"><button type="button" class="btn btn-solid" data-action="applyPages">Update my order</button><button type="button" class="btn btn-link" data-action="cancel">Keep 16 pages</button></div></div>'
+        : '<div class="row" style="padding-bottom:6px"><button type="button" class="btn btn-outline" data-action="askPages">Update my order to 18 pages</button></div>';
+    }
+    if (S.scenario === 'color') {
+      h += S.confirm === 'color'
+        ? '<div class="confirm"><div>Print pages 3 and 9 in color? Your new price per book is <strong>[NEW PRICE]</strong>.</div><div class="row"><button type="button" class="btn btn-solid" data-action="applyColor">Update my order</button><button type="button" class="btn btn-link" data-action="cancel">Not now</button></div></div>'
+        : '<div class="row" style="padding-bottom:6px"><button type="button" class="btn btn-outline" data-action="applyBw">Print them in black and white (free)</button><button type="button" class="btn btn-outline" data-action="askColor">Update my order to 2 color pages</button></div>';
+    }
+    h += '</div><div class="row"><button type="button" class="btn btn-outline" data-action="togglePicker">Upload a new file</button>';
+    if (S.scenario === 'size') h += '<button type="button" class="btn btn-outline" data-action="askService">Add formatting services ($50)</button>';
+    h += '</div>';
+    if (S.confirm === 'service') {
+      h += '<div class="panel"><div style="font-weight:700">Formatting services: $50</div><div>One flat price covers every problem listed above. Our prepress team fixes your file and sends a proof to approve before printing. Adds about [X] business days.</div><div class="row"><button type="button" class="btn btn-solid" data-action="applyService">Add to my order</button><button type="button" class="btn btn-link" data-action="cancel">Not now</button></div></div>';
+    }
+    h += '<div class="anyway"><button type="button" class="btn btn-solid" data-action="anyway">Place your order anyway</button><p>Not sure what to do? We\u2019ll check the file with you before printing.</p></div></div>';
+    return h;
+  }
+
+  function render() {
+    var onDone = S.screen === 'done';
+    $('checkout').hidden = onDone;
+    $('done').hidden = !onDone;
+
+    var tn = $('textName');
+    tn.textContent = S.scenario ? NAMES[S.scenario] : 'No file chosen';
+    tn.className = 'name' + (S.scenario ? '' : ' empty');
+    var cn = $('coverName');
+    cn.textContent = S.cover ? 'Grandmas-Garden-cover.pdf' : 'No file chosen';
+    cn.className = 'name' + (S.cover ? '' : ' empty');
+
+    $('picker').hidden = !S.picker;
+    document.querySelector('[data-action="togglePicker"]').setAttribute('aria-expanded', S.picker ? 'true' : 'false');
+    $('check').innerHTML = checkHTML();
+
+    var changed = S.pagesUpdated || S.colorUpdated;
+    var pages = S.pagesUpdated ? 18 : 16, color = S.colorUpdated ? 2 : 0;
+    $('pages').textContent = pages; $('bw').textContent = pages - color; $('color').textContent = color;
+    $('spine').textContent = S.pagesUpdated ? '0.035"' : '0.031"';
+    $('updated').hidden = !changed;
+    $('perBook').textContent = changed ? '[NEW PRICE]' : '$5.54';
+    $('additional').textContent = S.service ? '$50.00' : '$0.00';
+    $('total').textContent = changed ? '[NEW TOTAL]' : (S.service ? '$182.96' : '$132.96');
+
+    var canOrder = !!S.scenario || !!S.drive;
+    $('placeOrder').disabled = !canOrder;
+    $('orderHint').hidden = canOrder;
+
+    var msg = 'Your file is print-ready, so it goes straight to our prepress team.';
+    if (S.service) msg = 'You added formatting services, so our prepress team will fix your file, then email you a proof to approve.';
+    else if (!S.scenario && S.drive) msg = 'We\u2019ll download your file from Google Drive and check it. If anything needs fixing, we\u2019ll be in touch.';
+    else if (S.scenario && !resolved()) msg = 'Our team will review your file and contact you if anything needs changing before printing.';
+    $('doneMsg').textContent = msg;
+  }
+
+  var actions = {
+    togglePicker: function () { set({ picker: !S.picker }); },
+    pick: function (id) {
+      clearTimeout(timer);
+      set({ scenario: id, picker: false, checking: true, confirm: null, service: false, pagesUpdated: false, colorUpdated: false, bw: false });
+      timer = setTimeout(function () { set({ checking: false }); }, 1600);
+    },
+    pickCover: function () { set({ cover: true }); },
+    askPages: function () { set({ confirm: 'pages' }); },
+    applyPages: function () { set({ pagesUpdated: true, confirm: null }); },
+    applyBw: function () { set({ bw: true, confirm: null }); },
+    askColor: function () { set({ confirm: 'color' }); },
+    applyColor: function () { set({ colorUpdated: true, confirm: null }); },
+    askService: function () { set({ confirm: 'service' }); },
+    applyService: function () { set({ service: true, confirm: null }); },
+    cancel: function () { set({ confirm: null }); },
+    anyway: function () { set({ screen: 'done', picker: false, confirm: null }); window.scrollTo(0, 0); },
+    placeOrder: function () { if (S.scenario || S.drive) { set({ screen: 'done', picker: false }); window.scrollTo(0, 0); } },
+    reset: function () { clearTimeout(timer); $('drive').value = ''; S = fresh(); render(); window.scrollTo(0, 0); }
+  };
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-action]');
+    if (!el || !actions[el.dataset.action]) return;
+    actions[el.dataset.action](el.dataset.arg);
+  });
+  $('drive').addEventListener('input', function (e) { set({ drive: e.target.value.trim() }); });
+
+  S = fresh();
+  render();
+})();
+</script>
+</body>
+</html>
