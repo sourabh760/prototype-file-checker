@@ -3,385 +3,571 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DiggyPOD checkout with File Check: prototype</title>
+<title>DiggyPOD: upload your book prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FFFFFF; --ink:#1B2138; --muted:#4B5563; --soft:#6B7280; --line:#E3E6EA; --field:#BFC4CC;
-  --navy:#1E3A5F; --navy-ink:#FFFFFF; --navy-off:#8A97A8;
-  --panel:#E9EDEB; --panel-line:#C5CCC9; --label:#5F6670; --card:#FFFFFF;
-  --banner:#E8F1FB; --banner-ink:#1A6FD8; --pill:#FBF4E6;
+  --bg:#FFFFFF; --ink:#1B2138; --muted:#4B5563; --soft:#6B7280; --line:#E3E6EA; --field:#9AA1AC;
+  --navy:#1E3A5F; --navy-ink:#FFFFFF; --navy-off:#8A97A8; --orange:#E85D24; --red:#C8102E;
+  --cream:#FAF6EE; --gray:#E8E9EC; --sage:#E9EDEB; --card:#FFFFFF; --tile:#F1F2F4; --pill:#FBF4E6;
+  --banner:#E8F1FB; --banner-ink:#1A6FD8; --label:#7A818C;
   --ok:#E7F5EC; --ok-ink:#14532D; --info:#E8F1FB; --info-ink:#123A6B;
   --warn:#FFF8EC; --warn-line:#F0C98A; --warn-head:#6B3A00; --warn-ink:#5B4A33;
-  --confirm:#F3F6FA; --proto:#1B2138; --proto-ink:#F5F1E6;
+  --proto:#1B2138; --proto-ink:#F5F1E6;
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#11161F; --ink:#E9ECF2; --muted:#B4BBC6; --soft:#98A1AE; --line:#2A3240; --field:#465062;
-    --navy:#7FA8DE; --navy-ink:#0E1522; --navy-off:#4A5568;
-    --panel:#1C232D; --panel-line:#333D4B; --label:#A7B0BC; --card:#18202B;
-    --banner:#16263B; --banner-ink:#8DB8F2; --pill:#2A2519;
+    --bg:#11161F; --ink:#E9ECF2; --muted:#B4BBC6; --soft:#98A1AE; --line:#2A3240; --field:#58637A;
+    --navy:#7FA8DE; --navy-ink:#0E1522; --navy-off:#4A5568; --orange:#F2884F; --red:#FF6B7A;
+    --cream:#1C232D; --gray:#1F2733; --sage:#1C232D; --card:#18202B; --tile:#222B37; --pill:#2A2519;
+    --banner:#16263B; --banner-ink:#8DB8F2; --label:#A7B0BC;
     --ok:#12301F; --ok-ink:#9BE3B7; --info:#16263B; --info-ink:#B9D4F5;
     --warn:#2B2214; --warn-line:#6B5226; --warn-head:#F2C98A; --warn-ink:#E3D3B8;
-    --confirm:#1F2834; --proto:#E9ECF2; --proto-ink:#11161F;
+    --proto:#E9ECF2; --proto-ink:#11161F;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#11161F; --ink:#E9ECF2; --muted:#B4BBC6; --soft:#98A1AE; --line:#2A3240; --field:#465062;
-  --navy:#7FA8DE; --navy-ink:#0E1522; --navy-off:#4A5568;
-  --panel:#1C232D; --panel-line:#333D4B; --label:#A7B0BC; --card:#18202B;
-  --banner:#16263B; --banner-ink:#8DB8F2; --pill:#2A2519;
+  --bg:#11161F; --ink:#E9ECF2; --muted:#B4BBC6; --soft:#98A1AE; --line:#2A3240; --field:#58637A;
+  --navy:#7FA8DE; --navy-ink:#0E1522; --navy-off:#4A5568; --orange:#F2884F; --red:#FF6B7A;
+  --cream:#1C232D; --gray:#1F2733; --sage:#1C232D; --card:#18202B; --tile:#222B37; --pill:#2A2519;
+  --banner:#16263B; --banner-ink:#8DB8F2; --label:#A7B0BC;
   --ok:#12301F; --ok-ink:#9BE3B7; --info:#16263B; --info-ink:#B9D4F5;
   --warn:#2B2214; --warn-line:#6B5226; --warn-head:#F2C98A; --warn-ink:#E3D3B8;
-  --confirm:#1F2834; --proto:#E9ECF2; --proto-ink:#11161F;
+  --proto:#E9ECF2; --proto-ink:#11161F;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Lato",system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:var(--navy)}
 button{font-family:inherit;cursor:pointer}
-button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #6CA0DC;outline-offset:2px}
-img{max-width:100%}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #6CA0DC;outline-offset:2px}
 [hidden]{display:none !important}
-h1,h2{line-height:1.2}
-.display{font-family:"Poppins",system-ui,sans-serif}
-.wrap{max-width:1380px;margin:0 auto;padding:0 32px}
+h1,h2,h3{line-height:1.2}
+.poppins{font-family:"Poppins",system-ui,sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+.proto{background:var(--proto);color:var(--proto-ink);font-size:14px;padding:9px 20px;text-align:center;position:relative;z-index:30}
+.proto b{font-weight:900}
+.proto .switch{display:inline-flex;gap:4px;margin:6px 8px 2px;background:rgba(255,255,255,.12);border-radius:999px;padding:3px;vertical-align:middle}
+.proto .switch button{border:0;background:transparent;color:var(--proto-ink);font-weight:700;font-size:14px;padding:5px 14px;border-radius:999px;min-height:32px}
+.proto .switch button[aria-pressed="true"]{background:var(--proto-ink);color:var(--proto)}
+.proto .desc{display:block;font-size:13.5px;opacity:.9}
+.notice{border:1px solid var(--warn-line);background:var(--warn);border-radius:16px;padding:14px 18px;font-size:15px;color:var(--warn-ink)}
+.notice b{color:var(--warn-head)}
+.notice ul{margin:6px 0 8px;padding-left:20px}
+.manual-link{font-size:15px;color:var(--muted);text-align:center}
 
-.proto{background:var(--proto);color:var(--proto-ink);font-size:14px;padding:10px 20px;text-align:center}
-
-header.site{display:flex;flex-wrap:wrap;align-items:center;gap:20px 28px;padding-top:20px;padding-bottom:20px}
-.logo{font-family:"Poppins",system-ui,sans-serif;font-weight:700;font-size:32px;letter-spacing:.5px;color:var(--ink);text-decoration:none}
-nav.main{display:flex;flex-wrap:wrap;gap:12px 26px;margin-left:auto;font-size:17px}
+header.site{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;padding-top:16px;padding-bottom:16px}
+.logo{font-family:"Poppins",system-ui,sans-serif;font-weight:700;font-size:30px;letter-spacing:.5px;color:var(--ink);text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:8px 26px;margin-left:auto;font-size:16px}
 nav.main a{color:var(--ink);text-decoration:none}
-.get-pricing{background:var(--navy);color:var(--navy-ink);text-decoration:none;padding:12px 26px;border-radius:8px;font-size:17px}
-.phone{background:var(--pill);border-radius:12px;padding:10px 18px;font-size:17px}
+.get-pricing{background:var(--navy);color:var(--navy-ink);text-decoration:none;padding:10px 24px;border-radius:8px;box-shadow:0 3px 8px rgba(30,58,95,.3)}
+.phone{background:var(--pill);border-radius:12px;padding:8px 16px}
 
-.banner{background:var(--banner);color:var(--banner-ink);border-radius:6px;padding:20px 32px;font-size:18px}
+/* inputs and buttons, in the site's pill style */
+.pill-input,select.pill-input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--field);border-radius:999px;padding:12px 20px;width:100%}
+select.pill-input{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1.5 1.5L7 7l5.5-5.5' fill='none' stroke='%231B2138' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center}
+.field-label{display:block;font-weight:700;margin-bottom:8px}
+.btn{border:0;border-radius:10px;font-weight:700;min-height:44px;padding:10px 24px;font-size:16px;box-shadow:0 3px 8px rgba(27,33,56,.18)}
+.btn-navy{background:var(--navy);color:var(--navy-ink)}
+.btn-white{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-outline{background:var(--card);color:var(--navy);border:2px solid var(--navy);border-radius:999px;box-shadow:none;padding:8px 20px;font-size:15px}
+.btn:disabled{background:var(--navy-off);color:#fff;cursor:not-allowed;box-shadow:none}
+.link-btn{background:none;border:0;padding:0;color:var(--navy);text-decoration:underline;font:inherit;font-weight:700}
 
-.layout{max-width:1240px;margin:0 auto;padding:44px 32px 80px;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start}
-.col{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:36px}
-.title{font-size:40px;margin:0}
-section{display:flex;flex-direction:column;gap:16px}
-section h2{font-size:26px;margin:0;padding-bottom:14px;border-bottom:1px solid var(--line)}
-.sub{margin:6px 0 0;color:var(--muted)}
-label.field{display:flex;flex-direction:column;gap:8px;font-weight:700}
-.input{font:inherit;font-weight:400;color:var(--ink);background:var(--bg);border:1px solid var(--field);border-radius:999px;padding:14px 22px;width:100%}
-.filebox{display:flex;flex-wrap:wrap;align-items:center;gap:14px;border:1px solid var(--field);border-radius:999px;padding:8px 8px 8px 22px}
-.filebox .name{flex:1 1 200px;min-width:0;overflow-wrap:anywhere}
-.filebox .name.empty{color:var(--soft)}
+/* journey modal */
+.backdrop{position:fixed;inset:0;background:rgba(17,22,31,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20;overflow:auto}
+.modal{background:var(--gray);border-radius:24px;padding:36px;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h2{font-size:38px;margin:0 0 18px}
+.radio-card{display:flex;align-items:center;gap:14px;border:1px solid var(--field);border-radius:22px;padding:18px 22px;margin-top:16px;font-size:17px;cursor:pointer;background:transparent}
+.radio-card input{width:18px;height:18px}
+.modal-actions{display:flex;gap:18px;margin-top:24px}
+.modal-actions .btn{flex:1;min-height:50px;font-size:18px}
+.journey-note{margin-top:14px;font-size:15px;color:var(--info-ink);background:var(--info);border-radius:12px;padding:10px 14px}
 
-.btn{border:0;border-radius:999px;font-weight:700;min-height:44px;padding:10px 22px;font-size:15px}
-.btn-solid{background:var(--navy);color:var(--navy-ink)}
-.btn-outline{background:var(--card);color:var(--navy);border:2px solid var(--navy);padding:8px 20px}
-.btn-link{background:transparent;color:var(--navy);text-decoration:underline;padding:10px 12px}
-.btn-order{background:var(--navy);color:var(--navy-ink);padding:16px 40px;font-size:18px;min-height:52px;align-self:flex-start}
-.btn-order:disabled{background:var(--navy-off);cursor:not-allowed}
-.row{display:flex;flex-wrap:wrap;gap:10px}
-
-.picker{border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(27,33,56,.12);background:var(--card)}
+/* quote page */
+.quote{display:flex;flex-wrap:wrap;gap:40px 72px;align-items:flex-start;padding:56px 0 32px}
+.quote-intro{flex:1 1 380px}
+.quote-intro h1{font-size:56px;margin:0 0 18px;letter-spacing:-.5px}
+.quote-intro p{font-size:18px;margin:0;max-width:44ch}
+.quote-form{flex:1.3 1 520px;min-width:0;display:flex;flex-direction:column;gap:22px}
+.upload-box{border:2px dashed var(--field);border-radius:22px;padding:20px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;background:var(--card)}
+.upload-box .txt{flex:1 1 240px;min-width:0}
+.upload-box .t{font-weight:900;font-size:17px}
+.upload-box .s{color:var(--muted);font-size:14.5px}
+.upload-box .fname{font-weight:700;overflow-wrap:anywhere}
+.new-tag{display:inline-block;background:var(--ok);color:var(--ok-ink);border-radius:999px;font-size:12px;font-weight:900;padding:2px 10px;margin-left:8px;vertical-align:middle}
+.picker{border:1px solid var(--line);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:0 8px 24px rgba(27,33,56,.12);background:var(--card)}
 .picker .hint{font-size:13px;color:var(--muted);padding:6px 12px}
 .picker button{background:transparent;border:0;border-radius:10px;padding:12px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-size:15px;color:var(--ink);text-align:left;min-height:44px}
-.picker button:hover{background:var(--confirm)}
+.picker button:hover{background:var(--tile)}
 .picker button span:last-child{color:var(--muted)}
-
-.checking{display:flex;align-items:center;gap:12px;color:var(--muted);padding:6px 4px}
+.reading{display:flex;align-items:center;gap:12px;color:var(--muted)}
 .spin{width:18px;height:18px;border-radius:50%;border:3px solid var(--field);border-top-color:var(--navy);animation:spin .8s linear infinite;flex:none}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}}
+.or{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:14.5px}
+.or::before,.or::after{content:"";flex:1;border-top:1px solid var(--line)}
+.filled{font-size:14.5px;color:var(--ok-ink);background:var(--ok);border-radius:12px;padding:10px 14px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.changed{font-size:14px;color:var(--warn-head);margin-top:6px}
+.keep-going{width:100%;max-width:980px;margin:12px auto 56px;display:block;min-height:50px;font-size:20px;font-weight:900;border-radius:10px}
+.keep-hint{text-align:center;color:var(--muted);font-size:14.5px;margin:-44px 0 48px}
 
-.note{border-radius:16px;padding:16px 20px;display:flex;gap:12px;align-items:flex-start}
-.note svg{flex:none;margin-top:2px}
-.note .head{font-weight:700}
-.note .body{font-size:15px}
+/* file problems */
+.fix{border:1px solid var(--warn-line);background:var(--warn);border-radius:20px;padding:20px 22px;display:flex;flex-direction:column;gap:12px}
+.fix .lead{font-weight:900;font-size:17px;color:var(--warn-head)}
+.fix .lead-sub{color:var(--warn-ink);font-size:15px}
+.issues{background:var(--card);border-radius:14px;padding:2px 16px}
+.issue{padding:12px 0}
+.issue + .issue{border-top:1px solid var(--line)}
+.issue .t{font-weight:700}
+.issue a{font-size:15px}
+.fix .row{display:flex;flex-wrap:wrap;gap:10px}
+.fix .anyway{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:12px;border-top:1px solid var(--warn-line)}
+.fix .anyway span{font-size:14.5px;color:var(--warn-ink);text-align:center}
+.panel{background:var(--card);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.note{border-radius:14px;padding:12px 16px;font-size:15px}
 .note.ok{background:var(--ok);color:var(--ok-ink)}
 .note.info{background:var(--info);color:var(--info-ink)}
 
-.fix{border:1px solid var(--warn-line);background:var(--warn);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px}
-.fix .lead{font-weight:900;font-size:18px;color:var(--warn-head)}
-.fix .lead-sub{color:var(--warn-ink)}
-.issues{background:var(--card);border-radius:14px;padding:6px 18px 14px}
-.issue{display:flex;flex-direction:column;gap:4px;padding:12px 0}
-.issue + .issue{border-top:1px solid var(--line)}
-.issue .t{font-weight:700}
-.issue .tip{font-size:15px;color:var(--muted)}
-.confirm{background:var(--confirm);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
-.panel{background:var(--card);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
-.anyway{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:16px;border-top:1px solid var(--warn-line)}
-.anyway .btn{padding:12px 28px;font-size:16px;min-height:46px}
-.anyway p{margin:0;font-size:15px;color:var(--warn-ink);text-align:center}
+/* options page */
+.options{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;padding:28px 0 64px}
+.opt-main{flex:999 1 560px;min-width:0}
+.opt-main h1{font-size:44px;margin:0 0 10px}
+.opt-main > p{margin:0 0 26px;max-width:62ch}
+.opt-sec{margin-top:30px}
+.opt-sec h2{font-size:24px;margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.card{position:relative;background:var(--tile);border-radius:16px;padding:10px 10px 14px;display:flex;flex-direction:column;gap:10px;border:2px solid transparent;text-align:left;color:var(--ink);font-size:15px}
+.card[aria-pressed="true"]{border-color:var(--navy)}
+.card:disabled{opacity:.55;cursor:not-allowed}
+.card .img{height:100px;border-radius:10px;background:var(--card);display:grid;place-items:center}
+.card .lbl{display:flex;gap:8px;align-items:flex-start;font-weight:700}
+.card .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--field);flex:none;margin-top:2px}
+.card[aria-pressed="true"] .dot{border:5px solid var(--navy)}
+.card .why{font-size:13px;color:var(--red);font-weight:700}
+.speed-note{color:var(--red);font-weight:700;font-size:14px}
+.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px 22px;margin-top:12px}
+.services label{display:flex;justify-content:space-between;gap:10px;align-items:center;min-height:38px;font-size:15px}
+.services label span:first-child{display:flex;gap:10px;align-items:center}
+.services input{width:18px;height:18px}
+.services .added{font-weight:900;color:var(--ok-ink)}
+textarea.box{font:inherit;width:100%;min-height:90px;border:1px solid var(--field);border-radius:16px;padding:12px 16px;background:var(--bg);color:var(--ink)}
+.opt-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin-top:30px}
+.opt-actions .btn{min-width:150px}
+.opt-side{flex:1 1 340px;min-width:0;background:var(--cream);border-radius:26px;padding:34px 30px;display:flex;flex-direction:column;gap:20px}
+.book-img{height:220px;border-radius:14px;background:var(--tile);display:grid;place-items:center}
+.sel h2{font-size:24px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--field)}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+.k{color:var(--label);font-size:13.5px;text-transform:uppercase}
+.v{font-weight:700;font-size:15px}
+.ff{font-size:11.5px;font-weight:900;color:var(--ok-ink);background:var(--ok);border-radius:999px;padding:1px 8px;text-transform:none;margin-left:4px}
+.price-big{font-size:26px;font-weight:900}
+.zip{display:flex;border:1px solid var(--field);border-radius:10px;overflow:hidden}
+.zip input{flex:1;border:0;padding:10px 12px;font:inherit;background:var(--bg);color:var(--ink);min-width:0}
+.zip button{border:0;background:var(--navy);color:var(--navy-ink);font-weight:700;padding:0 18px;border-radius:8px;margin:3px}
 
-.check-row{display:flex;align-items:center;gap:12px;min-height:44px}
-.check-row input{width:20px;height:20px}
-.order-hint{font-size:15px;color:var(--muted)}
+/* pricing summary modal */
+.ps{background:var(--gray);border-radius:24px;padding:34px;max-width:1080px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.ps-grid{display:flex;flex-wrap:wrap;gap:24px 48px}
+.ps-grid > div{flex:1 1 360px;min-width:0}
+.ps h2{font-size:26px;margin:0 0 12px;padding-bottom:12px;border-bottom:1px solid var(--field)}
+.ps .big{font-size:30px;font-weight:900}
+.ps-actions{display:flex;flex-wrap:wrap;gap:18px;margin-top:26px}
+.ps-actions .btn{flex:1 1 200px;min-height:48px}
 
-aside.summary{flex:1 1 380px;min-width:0;background:var(--panel);border-radius:28px;padding:40px 36px;display:flex;flex-direction:column;gap:22px}
-aside.summary h2{font-size:28px;margin:0;padding-bottom:18px;border-bottom:1px solid var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 20px}
-.k{color:var(--label);font-size:15px;text-transform:uppercase}
-.v{font-weight:700}
-.updated{background:var(--card);border-radius:12px;padding:12px 14px;font-size:15px}
-.totals{border-top:1px solid var(--panel-line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
-.totals div{display:flex;justify-content:space-between;gap:12px}
-.totals .grand{font-size:20px;padding-top:8px}
-.totals .grand span:last-child{font-weight:900}
+/* checkout */
+.banner{background:var(--banner);color:var(--banner-ink);border-radius:6px;padding:20px 32px;font-size:18px}
+.checkout{display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start;padding:36px 0 72px}
+.co-main{flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.co-main h1{font-size:38px;margin:0}
+.co-main h2{font-size:24px;margin:10px 0 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.co-side{flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.order-sum{background:var(--sage);border-radius:26px;padding:34px 30px;display:flex;flex-direction:column;gap:18px}
+.order-sum h2{font-size:26px;margin:0;padding-bottom:12px;border-bottom:1px solid var(--ink)}
+.promo{background:var(--card);border-radius:20px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.promo h3{margin:0 0 12px;font-size:20px}
+.attached{display:flex;gap:12px;align-items:center;border:1px solid var(--field);border-radius:999px;padding:10px 10px 10px 20px}
+.attached .name{flex:1;min-width:0;overflow-wrap:anywhere}
+.done{max-width:760px;margin:0 auto;padding:60px 0 90px;display:flex;flex-direction:column;gap:22px}
+.done h1{font-size:40px;margin:0}
+.next{background:var(--sage);border-radius:24px;padding:26px 30px}
+.next ol{margin:8px 0 0;padding-left:22px}
 
-.done{max-width:760px;margin:0 auto;padding:64px 32px 96px;display:flex;flex-direction:column;gap:26px}
-.done .tick{width:64px;height:64px;border-radius:50%;background:var(--ok);color:var(--ok-ink);display:flex;align-items:center;justify-content:center}
-.done p.msg{font-size:20px;margin:0}
-.next{background:var(--panel);border-radius:24px;padding:28px 32px;display:flex;flex-direction:column;gap:12px}
-.next h2{font-size:22px;margin:0}
-.next ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
-
-@media (max-width:640px){
-  .wrap,.layout,.done{padding-left:18px;padding-right:18px}
-  .title{font-size:32px}
+@media (max-width:700px){
+  .wrap{padding-left:18px;padding-right:18px}
+  .quote-intro h1{font-size:38px}
+  .three,.two{grid-template-columns:1fr}
   nav.main{margin-left:0;width:100%}
-  aside.summary{padding:28px 22px}
-  .btn-order{align-self:stretch}
+  .modal h2{font-size:30px}
+  .keep-hint{margin-top:-40px}
 }
 </style>
 </head>
 <body>
-
-<div class="proto">Prototype: no files are uploaded. Choose a demo file under "Upload your files" to see each outcome.</div>
-
+<div class="proto" id="proto"></div>
 <header class="site wrap">
-  <a class="logo" href="#">DiGGYPOD</a>
-  <nav class="main" aria-label="Main">
-    <a href="#">Home</a><a href="#">Choose your Path</a><a href="#">Resources</a><a href="#">Company</a>
-  </nav>
-  <a class="get-pricing" href="#">Get Pricing</a>
-  <span class="phone">866-598-7171 | Blog</span>
+  <a class="logo" href="#" data-action="restart">DiGGYPOD</a>
+  <nav class="main" aria-label="Main"><a href="#">Home</a><a href="#">Choose your Path</a><a href="#">Resources</a><a href="#">Company</a></nav>
+  <a class="get-pricing" href="#" data-action="restart">Get Pricing</a>
+  <span class="phone">866-595-7973 | Blog</span>
 </header>
-
-<div id="checkout">
-  <div class="wrap"><div class="banner">Book added to your cart</div></div>
-
-  <main class="layout">
-    <div class="col">
-      <h1 class="title display">Checkout</h1>
-
-      <section aria-labelledby="ship">
-        <h2 id="ship">Where would you like your book shipped?</h2>
-        <label class="field">Full name<input class="input" type="text" value="Jane Smith" autocomplete="name"></label>
-        <label class="field">Phone number<input class="input" type="tel" value="(555) 010-2468" autocomplete="tel"></label>
-        <label class="field">Street address<input class="input" type="text" value="12 Maple Street" autocomplete="street-address"></label>
-      </section>
-
-      <section aria-labelledby="files">
-        <div style="padding-bottom:14px;border-bottom:1px solid var(--line)">
-          <h2 id="files" style="border:0;padding:0">Upload your files</h2>
-          <p class="sub">PDF files up to 500 MB. Larger files can be shared with a Google Drive link.</p>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="font-weight:700">Text PDF</div>
-          <div class="filebox">
-            <span class="name empty" id="textName">No file chosen</span>
-            <button type="button" class="btn btn-solid" data-action="togglePicker" aria-expanded="false" aria-controls="picker">Choose file</button>
-          </div>
-          <div class="picker" id="picker" hidden>
-            <div class="hint">Demo files: pick one to see how the check responds</div>
-            <button type="button" data-action="pick" data-arg="ready"><span>Grandmas-Garden-final.pdf</span><span>print-ready</span></button>
-            <button type="button" data-action="pick" data-arg="size"><span>Grandmas-Garden-Canva-export.pdf</span><span>3 fixable problems</span></button>
-            <button type="button" data-action="pick" data-arg="pages"><span>Grandmas-Garden-v2.pdf</span><span>2 extra pages</span></button>
-            <button type="button" data-action="pick" data-arg="color"><span>Grandmas-Garden-with-photos.pdf</span><span>has color pages</span></button>
-          </div>
-          <div id="check" aria-live="polite"></div>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="font-weight:700">Cover PDF</div>
-          <div class="filebox">
-            <span class="name empty" id="coverName">No file chosen</span>
-            <button type="button" class="btn btn-solid" data-action="pickCover">Choose file</button>
-          </div>
-        </div>
-
-        <label class="field">Google Drive link (optional)
-          <input class="input" id="drive" type="url" placeholder="Paste a share link if your file is too large to upload">
-        </label>
-      </section>
-
-      <section aria-labelledby="billing">
-        <h2 id="billing">Billing address</h2>
-        <label class="check-row"><input type="checkbox" checked> Same as shipping address</label>
-      </section>
-
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <button type="button" class="btn btn-order" id="placeOrder" data-action="placeOrder" disabled>Place order</button>
-        <div class="order-hint" id="orderHint">Upload your text file, or share a Google Drive link, to place your order.</div>
-      </div>
-    </div>
-
-    <aside class="summary" aria-label="Order summary">
-      <h2>Order Summary</h2>
-      <div class="grid">
-        <div><div class="k">Quantity</div><div class="v">24</div></div>
-        <div><div class="k">Book title</div><div class="v">Grandma's Garden</div></div>
-        <div><div class="k">Size</div><div class="v">5.5 x 8.5</div></div>
-        <div><div class="k">Total pages: <span id="pages">16</span></div><div class="v">(<span id="bw">16</span> B/W, <span id="color">0</span> Color)</div></div>
-        <div><div class="k">Paper stock</div><div class="v">50# Offset - White</div></div>
-        <div><div class="k">Binding type</div><div class="v">Perfect Bound</div></div>
-        <div><div class="k">Lamination type</div><div class="v">Gloss Lamination</div></div>
-        <div><div class="k">Production speed</div><div class="v">Normal (5-10 Business Days)</div></div>
-        <div><div class="k">Spine width</div><div class="v" id="spine">0.031"</div></div>
-      </div>
-      <div class="updated" id="updated" role="status" hidden>Updated to match your file.</div>
-      <div class="totals">
-        <div><span class="k">Per book price</span><span class="v" id="perBook">$5.54</span></div>
-        <div><span class="k">Additional services</span><span class="v" id="additional">$0.00</span></div>
-        <div class="grand"><span class="v">Total amount</span><span id="total">$132.96</span></div>
-      </div>
-    </aside>
-  </main>
-</div>
-
-<main class="done" id="done" hidden>
-  <div class="tick" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-  <h1 class="title display">Thank you, your order is placed</h1>
-  <p class="msg" id="doneMsg"></p>
-  <section class="next" aria-labelledby="next">
-    <h2 id="next">What happens next</h2>
-    <ol>
-      <li>We email you a digital proof of your book.</li>
-      <li>You approve it, or tell us what to change.</li>
-      <li>We print, bind and ship your books, with an email at each step.</li>
-    </ol>
-  </section>
-  <button type="button" class="btn btn-outline" style="align-self:flex-start;padding:12px 24px;font-size:16px" data-action="reset">Try another demo file</button>
-</main>
+<div id="app"></div>
 
 <script>
 (function () {
-  var NAMES = {
-    ready: 'Grandmas-Garden-final.pdf', size: 'Grandmas-Garden-Canva-export.pdf',
-    pages: 'Grandmas-Garden-v2.pdf', color: 'Grandmas-Garden-with-photos.pdf'
+  var SIZES = ['4x6','5x7','5x8','5.25x8','5.5x8.5','6x9','7x10','8x10','8.5x11'];
+  var FILES = {
+    ready:   { name: 'Grandmas-Garden-final.pdf', hint: 'print-ready, black and white', size: '5.5x8.5', pages: 200, color: [], issues: [] },
+    photos:  { name: 'Family-Recipes-with-photos.pdf', hint: 'print-ready, 40 color pages', size: '6x9', pages: 48, color: range(3, 42), issues: [] },
+    issues:  { name: 'My-Memoir-Canva-export.pdf', hint: 'needs a few fixes', size: '5.5x8.5', pages: 120, color: [4, 5], issues: [
+      ['Your page size isn\u2019t one we print', 'Your pages are 5.83 \u00d7 8.27 in. The closest size we print is 5.5 \u00d7 8.5 in, which we\u2019ve selected.', 'How to set your page size in Word and Canva'],
+      ['Some images run to the edge without bleed', 'On pages 4 and 5, images reach the edge, so a sliver could be cut off when the book is trimmed.', 'How to add bleed to your file'],
+      ['Some pages are a different size', 'Pages 12 and 13 are larger than the rest of your book.', 'How to make all pages the same size']] },
+    spreads: { name: 'Poetry-Collection-spreads.pdf', hint: 'two pages per sheet', size: '5.5x8.5', pages: 60, color: [], issues: [
+      ['Your file has two book pages on each sheet', 'Each sheet is 11 \u00d7 8.5 in, with two pages side by side. We need single pages.', 'How to export single pages from Word, InDesign and Canva']] }
   };
-  var ISSUES = {
-    size: [
-      ['The page size doesn\u2019t match your book', 'Your pages are 5.83 \u00d7 8.27 in, but you ordered a 5.5 \u00d7 8.5 in book.', 'Tip: set the page size to 5.5 \u00d7 8.5 in when you export your PDF.'],
-      ['Some images run to the edge without bleed', 'On pages 4 and 5, images reach the edge of the page, so a sliver could be cut off when the book is trimmed.', 'Tip: extend those images 0.125 in past the edge on every side.'],
-      ['Some pages are a different size', 'Pages 12 and 13 are larger than the rest of your book.', 'Tip: check those pages were set to the same size as the others.']
-    ],
-    pages: [['The page count doesn\u2019t match your order', 'Your file has 18 pages, but your order is for 16.', 'Please check this is the right file. If it is, you can update your order.']],
-    color: [['Some pages have color', 'Pages 3 and 9 have color, but your order is black and white.', 'You can print them in black and white at no extra cost, or add them as color pages.']]
+  var PAPERS = [{ id: '50w', t: '50# Offset - White', s: 'B/W Printing Only', bw: true }, { id: '60w', t: '60# Offset - White' }, { id: '60n', t: '60# Offset - Natural' }];
+  var BINDINGS = [{ id: 'perfect', t: 'Perfect Bound' }, { id: 'spiral', t: 'Plastic Spiral Bound' }, { id: 'hard', t: 'Hardcover' }];
+  var LAMS = [{ id: 'gloss', t: 'Gloss Lamination - Free' }, { id: 'matte', t: 'Matte Lamination - Upgrade' }];
+  var SERVICES = [['spine','Free Book Spine Creation',0,0],['unbound','Unbound Proof',40,0],['rushUnbound','Rush Unbound Proof',55,0],['unlam','Unlaminated Bound Proof',80,0],
+    ['rushBound','Rush Bound Proof',100,0],['insideBw','Inside Cover B/W',0.40,1],['insideColor','Inside Cover Color',1.00,1],['fileFix','Simple File Fix',50,0],['barcode','Create Barcode',25,0]];
+  var SPEEDS = ['Normal (5-10 Business Days)', 'Rush (3-5 Business Days)', 'Super Rush (48 Hours - 2 Business Days)'];
+
+  function range(a, b) { var r = []; for (var i = a; i <= b; i++) r.push(i); return r; }
+  function sz(k) { var p = k.split('x'); return p[0] + '" x ' + p[1] + '"'; }
+  function ranges(n) { if (!n.length) return 'none'; var o = [], s = n[0], p = n[0]; for (var i = 1; i <= n.length; i++) { if (n[i] === p + 1) { p = n[i]; continue; } o.push(s === p ? '' + s : s + '\u2013' + p); s = p = n[i]; } return o.join(', '); }
+  function money(x) { return '$' + x.toFixed(2); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function $(id) { return document.getElementById(id); }
+  var BOOK = '<svg width="64" height="76" viewBox="0 0 64 76" aria-hidden="true"><rect x="10" y="6" width="44" height="64" rx="3" fill="#fff" stroke="#C9CDD3"/><rect x="10" y="6" width="6" height="64" fill="#E3E6EA"/></svg>';
+  var OPEN = '<svg width="90" height="60" viewBox="0 0 90 60" aria-hidden="true"><path d="M45 12C33 4 16 4 6 8v44c10-4 27-4 39 4 12-8 29-8 39-4V8C74 4 57 4 45 12Z" fill="#fff" stroke="#C9CDD3"/><path d="M45 12v44" stroke="#C9CDD3"/></svg>';
+
+  var VARIANT = 'C';
+  var VARIANTS = {
+    A: 'Problems shown in full as soon as the file is read. The customer chooses before continuing.',
+    B: 'Problems shown only at checkout. The customer chooses before placing the order.',
+    C: 'A short notice when the file is read; the customer chooses before placing the order.'
   };
-  var OK_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>';
-  var TOOL_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>';
+  function protoHTML() {
+    return '<b>Prototype.</b> Only "Start Your Print Quote" changes; every other page is today\u2019s. Pick a demo file to see what happens.' +
+      '<span class="switch" role="group" aria-label="Flow to show">' + ['A', 'B', 'C'].map(function (v) {
+        return '<button type="button" data-action="variant" data-arg="' + v + '" aria-pressed="' + (VARIANT === v) + '">Flow ' + v + '</button>';
+      }).join('') + '</span><span class="desc">Flow ' + VARIANT + ': ' + VARIANTS[VARIANT] + '</span>';
+  }
 
   var S, timer;
   function fresh() {
-    return { screen: 'checkout', scenario: null, checking: false, picker: false, cover: false, drive: '',
-      confirm: null, service: false, pagesUpdated: false, colorUpdated: false, bw: false };
+    return { screen: 'journey', journey: null, journeyNote: false, manualMode: false, reviewNow: false,
+      file: null, reading: false, picker: false, size: '5.5x8.5', color: 0, bw: 16, qty: 24,
+      formatting: false, confirmFormatting: false, anyway: false,
+      title: '', paper: '50w', binding: 'perfect', lam: 'gloss', speed: '', services: {}, summary: false, plan: '' };
   }
-  function set(patch) { for (var k in patch) S[k] = patch[k]; render(); }
-  function $(id) { return document.getElementById(id); }
+  function set(p) { for (var k in p) S[k] = p[k]; render(); }
+  function file() { return S.file ? FILES[S.file] : null; }
+  function issues() {
+    var f = file(); if (!f) return [];
+    var list = f.issues.slice();
+    if (S.size !== f.size) list.push(['The size you chose doesn\u2019t match your file', 'You chose ' + sz(S.size) + ', but your file is set up for ' + sz(f.size) + '. The pages would need resizing.', 'How to set your page size in Word and Canva']);
+    return list;
+  }
+  function resolved() { return !issues().length || S.formatting || S.anyway; }
+  function canKeepGoing() {
+    if (!(S.qty > 0 && (S.color + S.bw) > 0)) return false;
+    if (!S.file) return true;
+    if (S.reading) return false;
+    return VARIANT === 'A' ? resolved() : true;
+  }
+  function canPlaceOrder() { return VARIANT === 'A' || !S.file || (!S.reading && resolved()); }
+  function servicesTotal() {
+    var t = 0; SERVICES.forEach(function (s) { if (S.services[s[0]]) t += s[3] ? s[2] * S.qty : s[2]; });
+    return t + (S.formatting ? 400 : 0);
+  }
+  function isTodayExample() { return S.size === '5.5x8.5' && S.color === 0 && S.bw === 16 && S.qty === 24 && S.paper === '50w' && S.binding === 'perfect' && S.lam === 'gloss'; }
+  function perBook() { return isTodayExample() ? '$5.54' : 'Live price'; }
+  function total() { return isTodayExample() ? money(132.96 + servicesTotal()) : 'Live price'; }
 
-  function resolved() { return S.scenario === 'ready' || S.bw || S.colorUpdated || S.pagesUpdated; }
+  // ---------------------------------------------------------------- pages
+  function journeyHTML() {
+    var opts = ['Still writing', 'Designing the cover', 'Editing/Formatting', 'Ready to print'];
+    return '<div class="wrap" style="min-height:60vh"></div><div class="backdrop" role="dialog" aria-modal="true" aria-labelledby="jt"><div class="modal">' +
+      '<h2 id="jt" class="poppins">Where are you in your book journey ?</h2><div>Choose only one answer.</div>' +
+      opts.map(function (o) { return '<label class="radio-card"><input type="radio" name="journey" value="' + o + '"' + (S.journey === o ? ' checked' : '') + ' data-journey> ' + o + '</label>'; }).join('') +
+      (S.journeyNote ? '<div class="journey-note" role="status">On the live site this goes to our author services. For this demo, choose "Ready to print".</div>' : '') +
+      '<div class="modal-actions"><button type="button" class="btn btn-white" data-action="restart">Cancel</button><button type="button" class="btn btn-navy" data-action="journeyGo">Continue</button></div></div></div>';
+  }
 
-  function checkHTML() {
-    if (!S.scenario) return '';
-    if (S.checking) return '<div class="checking" role="status"><span class="spin" aria-hidden="true"></span><span>Checking your file\u2026 you can keep filling in your details.</span></div>';
-    if (S.service) return '<div class="note info" role="status">' + TOOL_ICON + '<div><div class="head">Formatting services added.</div><div class="body">Our prepress team will fix your file. You\u2019ll get a proof to approve before anything is printed.</div></div></div>';
-    if (resolved()) {
-      var t = 'Your file looks print-ready.', b = 'Page size, page count and bleed all match your order.';
-      if (S.bw) { t = 'All set.'; b = 'Pages 3 and 9 will print in black and white. Your price stays the same.'; }
-      if (S.pagesUpdated) { t = 'All set.'; b = 'Your order now has 18 pages, matching your file.'; }
-      if (S.colorUpdated) { t = 'All set.'; b = 'Pages 3 and 9 will print in color, matching your file.'; }
-      return '<div class="note ok" role="status">' + OK_ICON + '<div><div class="head">' + t + '</div><div class="body">' + b + '</div></div></div>';
+  // mode: 'quote' (flow A), 'review' (flow C, opened from the notice), 'checkout' (flows B and C)
+  function fixHTML(mode) {
+    var f = file(), list = issues();
+    if (!f) return '';
+    if (S.reading) return mode === 'checkout' ? '<div class="reading" role="status"><span class="spin" aria-hidden="true"></span>Reading your new file\u2026</div>' : '';
+    if (S.formatting) return '<div class="note info" role="status"><b>Formatting services added ($400).</b> Our team will fix your file and send a proof to approve before printing.</div>';
+    if (!list.length) return mode === 'checkout' ? '' : '<div class="note ok" role="status"><b>Your file looks print-ready.</b>' + (f.color.length ? ' It has color pages, so you\u2019ll see papers that can print color.' : '') + '</div>';
+    if (mode === 'checkout' && S.anyway) return '<div class="note info" role="status"><b>Continuing without fixing.</b> Our team will check the file with you before printing.</div>';
+    var h = '<div class="fix"><div><div class="lead">' + (mode === 'checkout' ? 'Before you place your order: ' : '') + 'We spotted ' + (list.length === 1 ? 'something' : list.length + ' things') + ' to fix before printing.</div><div class="lead-sub">Fix them yourself with our guides, or let our team do it.</div></div><div class="issues">';
+    list.forEach(function (i) { h += '<div class="issue"><div class="t">' + i[0] + '</div><div>' + i[1] + '</div><a href="#">' + i[2] + ' \u2192</a></div>'; });
+    h += '</div><div class="row"><button type="button" class="btn btn-outline" data-action="fixedFile">Upload a fixed file</button><button type="button" class="btn btn-outline" data-action="askFormatting">Add formatting services ($400)</button></div>';
+    if (S.confirmFormatting) h += '<div class="panel"><b>Formatting services: $400</b><div>Our team fixes everything listed above, sends a proof to approve, and prints it with your order. Adds about [X] business days.</div><div class="row"><button type="button" class="btn btn-navy" data-action="addFormatting">Add to my order</button><button type="button" class="link-btn" data-action="cancelFormatting">Not now</button></div></div>';
+    if (mode === 'review') {
+      h += '<div class="anyway"><button type="button" class="link-btn" data-action="hideReview">Decide later, before checkout</button></div>';
+    } else {
+      h += '<div class="anyway"><button type="button" class="btn btn-navy" data-action="anyway">Continue without fixing</button><span>Not sure what to do? We\u2019ll check the file with you before printing.</span></div>';
     }
+    return h + '</div>';
+  }
 
-    var h = '<div class="fix"><div><div class="lead">We spotted something to fix before printing.</div><div class="lead-sub">Sorting it now avoids delays later.</div></div><div class="issues">';
-    ISSUES[S.scenario].forEach(function (i) {
-      h += '<div class="issue"><div class="t">' + i[0] + '</div><div>' + i[1] + '</div><div class="tip">' + i[2] + '</div></div>';
-    });
-    if (S.scenario === 'pages') {
-      h += S.confirm === 'pages'
-        ? '<div class="confirm"><div>Update your order to 18 pages? Your new price per book is <strong>[NEW PRICE]</strong>. Your cover\u2019s spine gets slightly wider too, and our team will adjust it for you.</div><div class="row"><button type="button" class="btn btn-solid" data-action="applyPages">Update my order</button><button type="button" class="btn btn-link" data-action="cancel">Keep 16 pages</button></div></div>'
-        : '<div class="row" style="padding-bottom:6px"><button type="button" class="btn btn-outline" data-action="askPages">Update my order to 18 pages</button></div>';
+  function noticeHTML() {
+    var f = file(), list = issues();
+    if (!f || S.reading) return '';
+    if (!list.length || S.formatting) return fixHTML('review');
+    if (S.reviewNow) return fixHTML('review');
+    return '<div class="notice" role="status"><b>We found ' + (list.length === 1 ? 'something' : list.length + ' things') + ' to fix before printing:</b><ul>' +
+      list.map(function (i) { return '<li>' + i[0] + '</li>'; }).join('') +
+      '</ul><button type="button" class="link-btn" data-action="review">Review now</button> or decide before checkout.</div>';
+  }
+
+  function quoteProblemsHTML() {
+    if (VARIANT === 'A') return fixHTML('quote');
+    if (VARIANT === 'C') return noticeHTML();
+    return '';
+  }
+
+  function quoteHTML() {
+    var f = file();
+    var h = '<main class="wrap"><div class="quote"><div class="quote-intro"><h1 class="poppins">Start Your Print Quote</h1>' +
+      '<p>Get an instant quote for your book. Upload your book and we\u2019ll fill this in for you, or choose your size, page count and quantity yourself.</p></div>' +
+      '<div class="quote-form">';
+    if (S.manualMode && !f) {
+      h += '<div class="manual-link">You\u2019re using our manual pricing calculator. <button type="button" class="link-btn" data-action="uploadMode">Upload your book instead</button></div>';
+    } else {
+      h += '<div class="upload-box"><div class="txt">' + (f
+          ? '<div class="fname">' + f.name + '</div><div class="s">Choose file to replace it</div>'
+          : '<div class="t">Upload your book <span class="new-tag">New</span></div><div class="s">PDF of your inside pages. We\u2019ll fill in the size, page count and color pages.</div>') +
+        '</div><button type="button" class="btn btn-navy" data-action="togglePicker" aria-expanded="' + S.picker + '">Choose file</button></div>';
     }
-    if (S.scenario === 'color') {
-      h += S.confirm === 'color'
-        ? '<div class="confirm"><div>Print pages 3 and 9 in color? Your new price per book is <strong>[NEW PRICE]</strong>.</div><div class="row"><button type="button" class="btn btn-solid" data-action="applyColor">Update my order</button><button type="button" class="btn btn-link" data-action="cancel">Not now</button></div></div>'
-        : '<div class="row" style="padding-bottom:6px"><button type="button" class="btn btn-outline" data-action="applyBw">Print them in black and white (free)</button><button type="button" class="btn btn-outline" data-action="askColor">Update my order to 2 color pages</button></div>';
+    if (S.picker) {
+      h += '<div class="picker"><div class="hint">Demo files: pick one to see what happens</div>';
+      Object.keys(FILES).forEach(function (k) { if (k !== 'fixedCopy') h += '<button type="button" data-action="pick" data-arg="' + k + '"><span>' + FILES[k].name + '</span><span>' + FILES[k].hint + '</span></button>'; });
+      h += '</div>';
     }
-    h += '</div><div class="row"><button type="button" class="btn btn-outline" data-action="togglePicker">Upload a new file</button>';
-    if (S.scenario === 'size') h += '<button type="button" class="btn btn-outline" data-action="askService">Add formatting services ($50)</button>';
-    h += '</div>';
-    if (S.confirm === 'service') {
-      h += '<div class="panel"><div style="font-weight:700">Formatting services: $50</div><div>One flat price covers every problem listed above. Our prepress team fixes your file and sends a proof to approve before printing. Adds about [X] business days.</div><div class="row"><button type="button" class="btn btn-solid" data-action="applyService">Add to my order</button><button type="button" class="btn btn-link" data-action="cancel">Not now</button></div></div>';
-    }
-    h += '<div class="anyway"><button type="button" class="btn btn-solid" data-action="anyway">Place your order anyway</button><p>Not sure what to do? We\u2019ll check the file with you before printing.</p></div></div>';
+    if (f && S.reading) h += '<div class="reading" role="status"><span class="spin" aria-hidden="true"></span>Reading your book\u2026 counting pages and finding color.</div>';
+    if (f && !S.reading) h += '<div class="filled">\u2713 Filled in from your file' + (f.color.length ? '. Color pages: ' + ranges(f.color) : '') + '.</div>';
+    else if (!f && !S.manualMode) h += '<div class="manual-link">Prefer to enter your details yourself? <button type="button" class="link-btn" data-action="manualMode">Use our manual pricing calculator</button></div>';
+    h += '<div><label class="field-label" for="size">Select Size</label><select class="pill-input" id="size" data-change="size">' +
+      SIZES.map(function (k) { return '<option value="' + k + '"' + (k === S.size ? ' selected' : '') + '>' + sz(k) + ' portrait</option>'; }).join('') + '</select></div>';
+    h += '<div class="three"><div><label class="field-label" for="color">Color Pages</label><input class="pill-input" id="color" type="number" min="0" value="' + S.color + '" data-num="color"></div>' +
+      '<div><label class="field-label" for="bw">B/W Pages</label><input class="pill-input" id="bw" type="number" min="0" value="' + S.bw + '" data-num="bw"></div>' +
+      '<div><label class="field-label" for="qty">Quantity</label><input class="pill-input" id="qty" type="number" min="1" value="' + S.qty + '" data-num="qty"></div></div>';
+    h += '<div id="changed">' + changedHTML() + '</div>';
+    h += '<div id="fix">' + quoteProblemsHTML() + '</div>';
+    h += '</div></div><button type="button" class="btn btn-navy keep-going" id="keep" data-action="keepGoing"' + (canKeepGoing() ? '' : ' disabled') + '>Keep Going \u2192</button>' +
+      '<p class="keep-hint" id="keep-hint"' + (canKeepGoing() || !S.file || S.reading ? ' hidden' : '') + '>Choose one of the options above to keep going.</p></main>';
     return h;
   }
 
-  function render() {
-    var onDone = S.screen === 'done';
-    $('checkout').hidden = onDone;
-    $('done').hidden = !onDone;
+  function changedHTML() {
+    var f = file();
+    if (!f || S.reading) return '';
+    var c = f.color.length, b = f.pages - c;
+    if (S.color === c && S.bw === b) return '';
+    return '<div class="changed">You changed the page counts from your file (' + b + ' B/W, ' + c + ' color). We\u2019ll check this with you before printing.</div>';
+  }
 
-    var tn = $('textName');
-    tn.textContent = S.scenario ? NAMES[S.scenario] : 'No file chosen';
-    tn.className = 'name' + (S.scenario ? '' : ' empty');
-    var cn = $('coverName');
-    cn.textContent = S.cover ? 'Grandmas-Garden-cover.pdf' : 'No file chosen';
-    cn.className = 'name' + (S.cover ? '' : ' empty');
+  function selectionHTML() {
+    var tag = S.file ? '<span class="ff">from your file</span>' : '';
+    var paper = PAPERS.filter(function (p) { return p.id === S.paper; })[0];
+    return '<div class="sel"><h2>Your Selection:</h2><div class="kv">' +
+      '<div><div class="k">Book size ' + tag + '</div><div class="v">' + sz(S.size) + ' portrait</div></div>' +
+      '<div><div class="k">Binding</div><div class="v">' + BINDINGS.filter(function (b) { return b.id === S.binding; })[0].t + '</div></div>' +
+      '<div><div class="k">Quantity</div><div class="v">' + S.qty + ' Books</div></div>' +
+      '<div><div class="k">Paper stock</div><div class="v">' + (paper ? paper.t : '\u2014') + '</div></div>' +
+      '<div><div class="k">Total pages ' + tag + '</div><div class="v">' + (S.color + S.bw) + ' Pages (' + S.bw + ' B/W, ' + S.color + ' Color)</div></div>' +
+      '<div><div class="k">Spine width</div><div class="v">' + (isTodayExample() ? '0.031"' : 'Calculated') + '</div></div>' +
+      '<div><div class="k">Production speed</div><div class="v">' + (S.speed || '-') + '</div></div>' +
+      '<div><div class="k">Lamination type</div><div class="v">' + LAMS.filter(function (l) { return l.id === S.lam; })[0].t.replace(/ - .*/, '') + '</div></div></div></div>';
+  }
 
-    $('picker').hidden = !S.picker;
-    document.querySelector('[data-action="togglePicker"]').setAttribute('aria-expanded', S.picker ? 'true' : 'false');
-    $('check').innerHTML = checkHTML();
+  function optionsHTML() {
+    var color = S.color > 0;
+    var h = '<main class="wrap"><div class="options"><div class="opt-main"><h1 class="poppins">Other Printing Options</h1><p>Pick your materials, finishes, and options to create a book that fits your vision. Every detail matters, and this is where you make it yours.</p>';
+    h += '<label class="field-label" for="title">Your Book Title</label><input class="pill-input" id="title" placeholder="Your Book" value="' + esc(S.title) + '" data-text="title">';
+    h += '<div class="opt-sec"><h2>Select the Paper Stocks</h2><div class="cards">' + PAPERS.map(function (p) {
+      var off = p.bw && color;
+      return '<button type="button" class="card" data-action="paper" data-arg="' + p.id + '" aria-pressed="' + (S.paper === p.id) + '"' + (off ? ' disabled' : '') + '><span class="img">' + OPEN + '</span><span class="lbl"><span class="dot"></span><span>' + p.t + (p.s ? '<br><span style="font-weight:400">' + p.s + '</span>' : '') + '</span></span>' +
+        (off ? '<span class="why">Not available: your book has ' + S.color + ' color pages</span>' : '') + '</button>';
+    }).join('') + '</div></div>';
+    h += '<div class="opt-sec"><h2>Select Binding Type</h2><div class="cards">' + BINDINGS.map(function (b) {
+      return '<button type="button" class="card" data-action="binding" data-arg="' + b.id + '" aria-pressed="' + (S.binding === b.id) + '"><span class="img">' + BOOK + '</span><span class="lbl"><span class="dot"></span>' + b.t + '</span></button>';
+    }).join('') + '</div></div>';
+    h += '<div class="opt-sec"><h2>Select Lamination Type</h2><div class="cards">' + LAMS.map(function (l) {
+      return '<button type="button" class="card" data-action="lam" data-arg="' + l.id + '" aria-pressed="' + (S.lam === l.id) + '"><span class="img">' + BOOK + '</span><span class="lbl"><span class="dot"></span>' + l.t + '</span></button>';
+    }).join('') + '</div></div>';
+    h += '<div class="opt-sec"><label class="field-label" for="speed">Production Speed <span class="speed-note">(Does Not include 2-3 days for processing and 3-5 days shipping)</span></label><select class="pill-input" id="speed" data-change="speed"><option value="">Select option...</option>' +
+      SPEEDS.map(function (s) { return '<option' + (S.speed === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>';
+    h += '<div class="services">';
+    if (S.formatting) h += '<label><span><input type="checkbox" checked data-action="removeFormatting"> Formatting Services</span><span class="added">$400.00</span></label>';
+    SERVICES.forEach(function (s) {
+      if (s[0] === 'fileFix' && S.formatting) return;
+      h += '<label><span><input type="checkbox" data-service="' + s[0] + '"' + (S.services[s[0]] ? ' checked' : '') + '> ' + s[1] + '</span><span>' + money(s[2]) + (s[3] ? ' / book' : '') + '</span></label>';
+    });
+    h += '</div></div><div class="opt-sec"><label class="field-label" for="notes">Any Notes for Us</label><textarea class="box" id="notes"></textarea></div>';
+    h += '<div class="opt-actions"><button type="button" class="btn btn-white" data-action="backToQuote">Back</button><button type="button" class="btn btn-orange">Save For Later</button><button type="button" class="btn btn-navy" data-action="openSummary"' + (S.speed ? '' : ' disabled') + '>Continue</button></div>';
+    if (!S.speed) h += '<p style="text-align:right;color:var(--muted);font-size:14px;margin:8px 0 0">Choose a production speed to continue.</p>';
+    h += '</div><aside class="opt-side" id="side"><div class="book-img">' + BOOK + '</div>' + selectionHTML() + pricingHTML() + '</aside></div></main>';
+    if (S.summary) h += summaryModalHTML();
+    return h;
+  }
 
-    var changed = S.pagesUpdated || S.colorUpdated;
-    var pages = S.pagesUpdated ? 18 : 16, color = S.colorUpdated ? 2 : 0;
-    $('pages').textContent = pages; $('bw').textContent = pages - color; $('color').textContent = color;
-    $('spine').textContent = S.pagesUpdated ? '0.035"' : '0.031"';
-    $('updated').hidden = !changed;
-    $('perBook').textContent = changed ? '[NEW PRICE]' : '$5.54';
-    $('additional').textContent = S.service ? '$50.00' : '$0.00';
-    $('total').textContent = changed ? '[NEW TOTAL]' : (S.service ? '$182.96' : '$132.96');
+  function pricingHTML() {
+    return '<div><h2 style="font-size:22px;margin:0 0 10px">Pricing Summary</h2><p style="margin:0 0 12px;font-size:14.5px">Free Ground Shipping is based on orders with 100 or more books, and shipping to the lower 48 United States</p>' +
+      '<div class="field-label" style="font-size:14.5px">Enter ZIP code for shipping estimate.</div><div class="zip"><input placeholder="Enter ZIP" aria-label="ZIP code"><button type="button">Apply</button></div>' +
+      '<div class="kv" style="margin-top:16px"><div><div class="k">Per book price</div><div class="price-big">' + perBook() + '</div></div><div><div class="k">Additional services</div><div class="price-big">' + money(servicesTotal()) + '</div></div></div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--field)"><span>Ground Shipping</span><b>N/A</b></div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:12px;border-top:1px solid var(--field)"><b>Printing Services Total</b><span class="price-big">' + total() + '</span></div></div>';
+  }
 
-    var canOrder = !!S.scenario || !!S.drive;
-    $('placeOrder').disabled = !canOrder;
-    $('orderHint').hidden = canOrder;
+  function summaryModalHTML() {
+    var paper = PAPERS.filter(function (p) { return p.id === S.paper; })[0];
+    return '<div class="backdrop" role="dialog" aria-modal="true" aria-label="Pricing summary"><div class="ps"><div class="ps-grid"><div><h2>Pricing Summary</h2><div class="kv">' +
+      '<div><div class="k">Per book price</div><div class="big">' + perBook() + '</div></div><div><div class="k">Additional services</div><div class="big">' + money(servicesTotal()) + '</div></div>' +
+      '<div><div class="k">Printing services total</div><div class="big">' + total() + '</div></div><div><div class="k">Estimated shipping</div><div class="big">N/A</div></div></div>' +
+      '<label style="display:flex;gap:8px;align-items:center;margin:16px 0"><input type="checkbox"> Your Note</label>' +
+      '<label class="field-label" for="plan">I plan to place a print order in the next:</label><select class="pill-input" id="plan" data-change="plan"><option>--None--</option><option>Few Days</option><option>1 month</option><option>2-3 months</option><option>4-6 months</option><option>&gt; 6 months</option></select></div>' +
+      '<div><h2>Summary</h2><div class="kv"><div><div class="k">Quantity</div><div class="v">' + S.qty + ' Items</div></div><div><div class="k">Binding</div><div class="v">' + BINDINGS.filter(function (b) { return b.id === S.binding; })[0].t + '</div></div>' +
+      '<div><div class="k">Total pages</div><div class="v">' + (S.color + S.bw) + ' pages ( ' + S.bw + ' B/W, ' + S.color + ' Color )</div></div><div><div class="k">Paper stock</div><div class="v">' + paper.t + '</div></div>' +
+      '<div><div class="k">Production speed</div><div class="v">' + S.speed + '</div></div><div><div class="k">Size</div><div class="v">' + sz(S.size) + ' portrait</div></div>' +
+      (S.formatting ? '<div><div class="k">Formatting services</div><div class="v">$400.00</div></div>' : '') + '</div></div></div>' +
+      '<div class="ps-actions"><button type="button" class="btn btn-white" data-action="closeSummary">Cancel</button><button type="button" class="btn btn-orange">Save for later</button><button type="button" class="btn btn-navy" data-action="checkout">Checkout</button></div></div></div>';
+  }
 
+  function checkoutHTML() {
+    var f = file(), paper = PAPERS.filter(function (p) { return p.id === S.paper; })[0];
+    var h = '<div class="wrap"><div class="banner">Book added to your cart</div></div><main class="wrap"><div class="checkout"><div class="co-main"><h1 class="poppins">Checkout</h1>' +
+      '<h2>Where would you like to book shipped?</h2>' +
+      '<div><label class="field-label" for="n">Full name *</label><input class="pill-input" id="n" value="Jane Smith"></div>' +
+      '<div><label class="field-label" for="ph">Phone number* <span style="font-weight:400;font-size:14px">(in case of delivery questions)</span></label><input class="pill-input" id="ph" value="(555) 010-2468"></div>' +
+      '<div><label class="field-label" for="st">Street address*</label><input class="pill-input" id="st" value="12 Maple Street"></div>' +
+      '<div class="two"><div><label class="field-label" for="zip">Zip code*</label><input class="pill-input" id="zip" value="49286"></div><div><label class="field-label" for="city">City*</label><input class="pill-input" id="city" value="Tecumseh"></div></div>' +
+      '<h2>Upload Your Files Here</h2>';
+    if (f) {
+      h += '<div class="field-label">Your Text PDF</div><div class="attached"><span class="name">\u2713 ' + f.name + '</span><span style="color:var(--ok-ink);font-weight:700;padding-right:12px">Already uploaded</span></div>';
+      if (VARIANT !== 'A') h += fixHTML('checkout');
+    } else {
+      h += '<div class="field-label">Upload Your Text PDF</div><div class="attached"><span class="name" style="color:var(--soft)">No file chosen</span><button type="button" class="btn btn-navy" style="border-radius:999px">Choose file</button></div>' +
+        '<div style="font-size:14px;color:var(--muted)">Checked against the details you entered, as in the earlier checkout design.</div>';
+    }
+    h += '<div class="field-label" style="margin-top:6px">Upload Your Cover PDF</div><div class="attached"><span class="name" style="color:var(--soft)">No file chosen</span><button type="button" class="btn btn-navy" style="border-radius:999px">Choose file</button></div>' +
+      '<div><label class="field-label" for="drive">Drive Link (optional)</label><input class="pill-input" id="drive" placeholder="If your file is larger, share a Google Drive link"></div>' +
+      '<label style="display:flex;gap:10px;align-items:center;min-height:44px"><input type="checkbox" checked style="width:20px;height:20px"> Billing address same as shipping</label>' +
+      '<button type="button" class="btn btn-navy" id="place" style="align-self:flex-start;min-height:52px;padding:14px 40px;font-size:18px" data-action="place"' + (canPlaceOrder() ? '' : ' disabled') + '>Place Order</button>' +
+      (canPlaceOrder() ? '' : '<p style="margin:0;color:var(--muted);font-size:14.5px">Choose an option for your file above to place your order.</p>') + '</div>';
+    h += '<div class="co-side"><div class="order-sum"><h2>Order Summary</h2><div class="kv">' +
+      '<div><div class="k">Quantity</div><div class="v">' + S.qty + '</div></div><div><div class="k">Book title</div><div class="v">' + esc(S.title || 'Your Book') + '</div></div>' +
+      '<div><div class="k">Size</div><div class="v">' + S.size.replace('x', ' x ') + '</div></div><div><div class="k">Total pages: ' + (S.color + S.bw) + '</div><div class="v">(' + S.bw + ' B/W, ' + S.color + ' Color)</div></div>' +
+      '<div><div class="k">Paper stock</div><div class="v">' + paper.t + '</div></div><div><div class="k">Binding type</div><div class="v">' + BINDINGS.filter(function (b) { return b.id === S.binding; })[0].t + '</div></div></div>' +
+      '<div class="kv" style="border-top:1px solid var(--field);padding-top:14px"><div><div class="k">Per book price</div><div class="price-big">' + perBook() + '</div></div><div><div class="k">Additional services</div><div class="price-big">' + money(servicesTotal()) + '</div></div></div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--field);padding-top:12px"><b style="font-size:20px">Total amount</b><span class="price-big">' + total() + '</span></div></div>' +
+      '<div class="promo"><h3>Promo Codes</h3><div class="zip"><input placeholder="Enter promo code" aria-label="Promo code"><button type="button">Apply</button></div></div></div></div></main>';
+    return h;
+  }
+
+  function doneHTML() {
     var msg = 'Your file is print-ready, so it goes straight to our prepress team.';
-    if (S.service) msg = 'You added formatting services, so our prepress team will fix your file, then email you a proof to approve.';
-    else if (!S.scenario && S.drive) msg = 'We\u2019ll download your file from Google Drive and check it. If anything needs fixing, we\u2019ll be in touch.';
-    else if (S.scenario && !resolved()) msg = 'Our team will review your file and contact you if anything needs changing before printing.';
-    $('doneMsg').textContent = msg;
+    if (!S.file) msg = 'We\u2019ll check your files and email you a proof to approve.';
+    else if (S.formatting) msg = 'Our prepress team will format your file, then email you a proof to approve.';
+    else if (issues().length || changedHTML()) msg = 'Our team will review your file and contact you if anything needs changing before printing.';
+    return '<main class="wrap"><div class="done"><h1 class="poppins">Thank you, your order is placed</h1><p style="font-size:20px;margin:0">' + msg + '</p>' +
+      '<div class="next"><b>What happens next</b><ol><li>We email you a digital proof of your book.</li><li>You approve it, or tell us what to change.</li><li>We print, bind and ship your books, with an email at each step.</li></ol></div>' +
+      '<button type="button" class="btn btn-white" style="align-self:flex-start" data-action="restart">Start another demo</button></div></main>';
+  }
+
+  function render() {
+    var pages = { journey: journeyHTML, quote: quoteHTML, options: optionsHTML, checkout: checkoutHTML, done: doneHTML };
+    $('app').innerHTML = pages[S.screen]();
+    $('proto').innerHTML = protoHTML();
+  }
+  function go(screen) { set({ screen: screen, picker: false, summary: false }); window.scrollTo(0, 0); }
+  function refreshQuoteBits() {
+    if (S.screen !== 'quote') return;
+    var c = $('changed'); if (c) c.innerHTML = changedHTML();
+    var k = $('keep'); if (k) k.disabled = !canKeepGoing();
+    var hint = $('keep-hint'); if (hint) hint.hidden = canKeepGoing() || !S.file || S.reading;
   }
 
   var actions = {
+    restart: function () { clearTimeout(timer); S = fresh(); render(); window.scrollTo(0, 0); },
+    journeyGo: function () { if (S.journey === 'Ready to print') go('quote'); else set({ journeyNote: true }); },
     togglePicker: function () { set({ picker: !S.picker }); },
     pick: function (id) {
       clearTimeout(timer);
-      set({ scenario: id, picker: false, checking: true, confirm: null, service: false, pagesUpdated: false, colorUpdated: false, bw: false });
-      timer = setTimeout(function () { set({ checking: false }); }, 1600);
+      var f = FILES[id];
+      set({ file: id, picker: false, reading: true, formatting: false, confirmFormatting: false, anyway: false, reviewNow: false,
+            size: f.size, color: f.color.length, bw: f.pages - f.color.length });
+      timer = setTimeout(function () { set({ reading: false }); }, 1700);
     },
-    pickCover: function () { set({ cover: true }); },
-    askPages: function () { set({ confirm: 'pages' }); },
-    applyPages: function () { set({ pagesUpdated: true, confirm: null }); },
-    applyBw: function () { set({ bw: true, confirm: null }); },
-    askColor: function () { set({ confirm: 'color' }); },
-    applyColor: function () { set({ colorUpdated: true, confirm: null }); },
-    askService: function () { set({ confirm: 'service' }); },
-    applyService: function () { set({ service: true, confirm: null }); },
-    cancel: function () { set({ confirm: null }); },
-    anyway: function () { set({ screen: 'done', picker: false, confirm: null }); window.scrollTo(0, 0); },
-    placeOrder: function () { if (S.scenario || S.drive) { set({ screen: 'done', picker: false }); window.scrollTo(0, 0); } },
-    reset: function () { clearTimeout(timer); $('drive').value = ''; S = fresh(); render(); window.scrollTo(0, 0); }
+    fixedFile: function () {
+      var f = file();
+      FILES.fixedCopy = { name: f.name.replace('.pdf', '-fixed.pdf'), hint: 'fixed', size: f.size, pages: f.pages, color: f.color, issues: [] };
+      actions.pick('fixedCopy');
+    },
+    askFormatting: function () { set({ confirmFormatting: true }); },
+    addFormatting: function () { set({ formatting: true, confirmFormatting: false }); },
+    cancelFormatting: function () { set({ confirmFormatting: false }); },
+    removeFormatting: function () { set({ formatting: false }); },
+    anyway: function () {
+      S.anyway = true;
+      if (S.screen === 'quote' && canKeepGoing()) actions.keepGoing(); else render();
+    },
+    variant: function (v) { VARIANT = v; actions.restart(); },
+    manualMode: function () { set({ manualMode: true, picker: false }); },
+    uploadMode: function () { set({ manualMode: false }); },
+    review: function () { set({ reviewNow: true }); },
+    hideReview: function () { set({ reviewNow: false }); },
+    keepGoing: function () {
+      if (!canKeepGoing()) return;
+      if (S.color > 0 && S.paper === '50w') S.paper = '60w';
+      go('options');
+    },
+    backToQuote: function () { go('quote'); },
+    paper: function (id) { set({ paper: id }); },
+    binding: function (id) { set({ binding: id }); },
+    lam: function (id) { set({ lam: id }); },
+    openSummary: function () { if (S.speed) set({ summary: true }); },
+    closeSummary: function () { set({ summary: false }); },
+    checkout: function () { go('checkout'); },
+    place: function () { if (canPlaceOrder()) go('done'); }
   };
 
   document.addEventListener('click', function (e) {
     var el = e.target.closest('[data-action]');
-    if (!el || !actions[el.dataset.action]) return;
+    if (!el || el.disabled || !actions[el.dataset.action]) return;
+    if (el.tagName !== 'INPUT') e.preventDefault();
     actions[el.dataset.action](el.dataset.arg);
   });
-  $('drive').addEventListener('input', function (e) { set({ drive: e.target.value.trim() }); });
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.dataset.journey !== undefined) { S.journey = t.value; S.journeyNote = false; return; }
+    if (t.dataset.change === 'size') set({ size: t.value });
+    if (t.dataset.change === 'speed') set({ speed: t.value });
+    if (t.dataset.service) {
+      S.services[t.dataset.service] = t.checked;
+      if (t.checked && t.dataset.service === 'insideBw') S.services.insideColor = false;
+      if (t.checked && t.dataset.service === 'insideColor') S.services.insideBw = false;
+      render();
+    }
+  });
+  // Typing updates state and the parts that depend on it, without redrawing the page,
+  // so a click on "Keep Going" straight after typing isn't lost.
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.dataset.num) { S[t.dataset.num] = Math.max(0, parseInt(t.value || '0', 10) || 0); refreshQuoteBits(); }
+    if (t.dataset.text === 'title') S.title = t.value;
+  });
 
   S = fresh();
   render();
